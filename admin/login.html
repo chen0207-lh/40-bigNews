@@ -76,6 +76,10 @@
                 $.ajax({
                     type: 'post',
                     url: 'http://localhost:8080/api/v1/admin/user/login',
+                    data: {
+                        username: userName,
+                        password: userPaw
+                    },
                     success: function(res) {
                         if (res.code === 200) {
                             // 设置本地储存
