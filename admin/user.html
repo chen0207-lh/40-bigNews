@@ -44,7 +44,7 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <input style="display:none" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
@@ -67,6 +67,56 @@
             </form>
         </div>
     </div>
+    <script src="./libs/http.js"></script>
+    <script>
+        $(function() {
+            //当用户点击到个人中心时，获取用户信息到页面
+            $.get({
+                url: BigNew.user_detail,
+                success: function(res) {
+                    // 当获取成功后，渲染到页面
+                    if (res.code === 200) {
+                        // 方法1
+                        // $('input.username').val(res.data.username)
+                        // $('input.nickname').val(res.data.nickname)
+                        // $('input.email').val(res.data.email)
+                        // $('.user_pic').attr('src', res.data.userPic)
+                        // $('input.password').val(res.data.password)
+
+                        // 方法2
+                        for (var key in res.data) {
+                            $('input.' + key).val(res.data[key])
+                        }
+                        $('user_pic').attr('src', res.data.userPic)
+                    }
+                }
+            })
+
+            // 给文件域添加change事件，显示上传的图片
+            $('#exampleInputFile').on('change', function() {
+                    var Img = this.files[0];
+                    // console.log(Img)
+                    //window上右一个URL对象，在这个对象中有一个createObjectURL，将图片的信息转换为url地址
+                    var url = URL.createObjectURL(Img);
+                    $('.user_pic').attr('src', url)
+                })
+                //    给修改按钮添加点击事件
+            $('.btn-edit').on('click', function(e) {
+                // 阻止默认自动跳转行为
+                e.preventDefault();
+                var form = ('#form')[0];
+                var data = new FormData(form);
+
+                $.post({
+                    url: BigNew.user_edit,
+                    data: data,
+                    success: function(res) {
+
+                    }
+                })
+            })
+        })
+    </script>
 </body>
 
 </html>
