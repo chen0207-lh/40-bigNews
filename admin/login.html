@@ -81,6 +81,9 @@
                         password: userPaw
                     },
                     success: function(res) {
+                        $('.modal-body').text(res.msg);
+                        $('#myModal').modal();
+                        // 判断用户的用户名和密码是否正确
                         if (res.code === 200) {
                             // 设置本地储存
                             localStorage.setItem('token', res.token);
