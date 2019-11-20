@@ -25,44 +25,50 @@
         </div>
         <!-- 左侧导航栏 -->
         <div class="menu">
-            <div class="level01 active"><a href="#" target="main_frame"><i
+            <div class="level01 active"><a href="./main_count.html" target="main_frame"><i
                         class="iconfont icon-yidiandiantubiao04"></i><span>首页</span></a></div>
+
             <div class="level01"><a href="#"><i class="iconfont icon-icon-article"></i><span>文章管理</span><b
                         class="iconfont icon-arrowdownl"></b></a></div>
+
             <ul class="level02">
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
+                <li><a href="./article_list.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
+                <li><a href="./article_release.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
+                <li><a href="./article_category.html" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
                 </li>
             </ul>
 
-            <div class="level01"><a href="#" target="main_frame"><i
+            <div class="level01"><a href="./comment_list.html" target="main_frame"><i
                         class="iconfont icon-comment"></i><span>评论管理</span></a></div>
-            <div class="level01" id="user"><a href="#" target="main_frame"><i
+            <div class="level01" id="user"><a href="./user.html" target="main_frame"><i
                         class="iconfont icon-user"></i><span>个人中心</span></a></div>
         </div>
+
         <!-- 顶部栏 -->
         <div class="header_bar">
             <div class="user_center_link">
-                <a href="./user.html" target="main_frame">个人中心</a>
+                <a href="./user.html" onclick="$('#user').trigger('click')" target="main_frame">个人中心</a>
                 <img src="images/2.jpg" alt="person">
                 <a href="javascript:void(0)" class="logout"><i class="iconfont icon-tuichu"></i> 退出</a>
             </div>
         </div>
         <!-- 右侧主体内容 -->
         <div class="main" id="main_body">
-            <iframe src="main_count.html" frameborder="0" width='100%' height="='100%'"></iframe>
+            <iframe src="main_count.html" name="main_frame" frameborder="0" style="width:100% ;height:100%;"></iframe>
+
         </div>
     </div>
+    <script src="./libs/http.js"></script>
     <script>
         $(function() {
             // ajax请求
             $.ajax({
                 type: 'get',
-                url: 'http://localhost:8080/api/v1/admin/user/info',
+                url: BigNew.user_info,
                 success: function(res) {
-                    // 修改用户名和用户头像
-                    // 左边导航栏的头像和用户名
+                    console.log(res)
+                        // 修改用户名和用户头像
+                        // 左边导航栏的头像和用户名
                     $('.user_info>img').attr('src', res.data.userPic);
                     $('.user_info>span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
                     // 顶部栏右边的头像
@@ -103,10 +109,20 @@
             });
             // 二级列表
             $('.level02>li').click(function() {
-                $(this).addClass('active').siblings().removeClass('active')
+                    $(this).addClass('active').siblings().removeClass('active')
+                })
+                // ajax发送请求个人详情信息，渲染页面
+            $.ajax({
+                url: BigNew.user_detail,
+                type: 'get',
+                success: function(res) {
+                    for (var key in res.data) {
+                        $('input.' + key).val(res.data[key]);
+                    }
+                    $('img.user_pic').attr('src', res.data.userPic);
+
+                }
             })
-
-
         })
     </script>
 </body>
