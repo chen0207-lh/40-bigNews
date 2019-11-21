@@ -51,15 +51,13 @@
             </table>
         </div>
     </div>
-
     <!-- bootstrap的模态框 -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="exampleModalLabel">文章分类</h4>
                 </div>
                 <div class="modal-body">
@@ -77,12 +75,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-cancel">
-                        取消
-                    </button>
-                    <button type="button" class="btn btn-primary" id="btn-confirm">
-                        确认
-                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-cancel" data-target="#myModal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm">确认</button>
                 </div>
             </div>
         </div>
@@ -95,8 +89,8 @@
           <td>{{$value.name}}</td>
           <td>{{$value.slug}}</td>
           <td class="text-center">
-              <a href="javascript:void(0)" data-id='{{$value.id}}' data-toggle="modal" class=" btn btn-info btn-xs" >编辑</a>
-              <a href="javascript:void(0)" data-id='{{$value.id}}' class="btn btn-danger btn-xs">删除</a>
+              <a href="javascript:void(0)" data-id='{{$value.id}}' data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs" >编辑</a>
+              <a href="javascript:void(0)" data-id='{{$value.id}}' class="btn btn-danger btn-delete btn-xs ">删除</a>
           </td>
       </tr>
       {{/each}}
@@ -104,15 +98,19 @@
     <script>
         $(function () {
             // 发送请求获取所有文章类别
-            $.get({
-                url: BigNew.category_list,
-                success: function (res) {
-                    // 渲染模板引擎到页面
-                    var HtmlStr = template("list", res);
-                    // console.log(HtmlStr)
-                    $("tbody").html(HtmlStr);
-                }
-            });
+            getDate();
+            function getDate() {
+                $.get({
+                    url: BigNew.category_list,
+                    success: function (res) {
+                        // 渲染模板引擎到页面
+                        var HtmlStr = template("list", res);
+                        // console.log(HtmlStr)
+                        $("tbody").html(HtmlStr);
+                    }
+                })
+            }
+           
 
             // 给模态框添加点击事件 点击取消按钮时清空form表单输入框中的内容
             $("#btn-cancel").on("click", function () {
@@ -127,46 +125,106 @@
                 $(".modal-body form")[0].reset();
             });
 
-            //点击触发 booststrap中的show.bs.modal事件
-            $("#myModal").on("show.bs.modal", function (e) {
-                //判断
-                // debugger;
-                if (e.relatedTarget === $("#xinzengfenlei")[0]) {
-                    // 代表点击了新增
-                    $("#exampleModalLabel").text("新增文章分类");
-                    $("#btn-confirm")
-                        .text("新增")
-                        .addClass("btn-success")
-                        .removeClass("btn-primary");
-                    // 再把模态框重置一下
-                    $(".modal-body form")[0].reset();
-                } else {
-                    // 表示点击了编辑
-                    $("#exampleModalLabel").text("编辑文章分类");
-                    $("#btn-confirm")
-                        .text("编辑")
-                        .addClass("btn-primary")
-                        .removeClass("btn-success");
-                    var Id = $("e.relatedTarget").attr("data-id");
-                    // console.log(Id)
+            
+            // 给模态框添加show.bs.modal事件
+            $('#myModal').on('show.bs.modal',function(e){
+                if(e.relatedTarget==$('#xinzengfenlei')[0]){
+                    // 修改模态框文本 表示点击的是新增按钮
+                    $('#exampleModalLabel').text('新增分类');
+                    $('#btn-confirm').text('新增').addClass('btn-success').removeClass('btn-primary' )
+                    // 重置表单
+                    $('.modal-body form')[0].reset();
+                }else{
+                     // 修改模态框文本 表示点击的是编辑按钮
+                     $('#exampleModalLabel').text('编辑分类');
+                     $('#btn-confirm').text('编辑').addClass('btn-primary').removeClass('btn-success')
+                    var Id = $(e.relatedTarget).attr('data-id');
+
                     $.get({
-                        url: BigNew.category_edit,
-                        data: {
-                            id: Id
+                        url:BigNew.category_search,
+                        data:{
+                            id:Id
                         },
-                        success: function (res) {
-                            // console.log(res);
-                            if (res.code == 200) {
-                                $("#recipient-name").val(res.data[0].name);
-                                $("#message-text").val(res.data[0].slug);
-                                $("#categoryId").val(res.data[0].id);
+                        success:function(res){
+                            // console.log(res)
+                            if(res.code===200){
+                                $('#recipient-name').val(res.data[0].name)
+                                $('#message-text').val(res.data[0].slug)
+                                $('#categoryId').val(res.data[0].id)
+                            }
+
+                        }
+                    })
+                }
+                // 给新增/编辑添加点击事件
+                $('#btn-confirm').on('click',function(){
+                    if($(this).hasClass('btn-success')){
+                        // 新增 获取表单内容
+                      var name=  $('#recipient-name').val()
+                      var text= $('#message-text').val()
+                    //   发送ajax请求获取新增的数据
+                      $.post({
+                          url:BigNew.category_add,
+                          data:{
+                              name:name,
+                              slug:text
+                          },
+                          success:function(res){
+                              if(res.code===201){
+                                $('#myModal').modal('hide');
+                                getDate();  
+                              }
+                          }
+                      })
+                    }else{
+                        // 编辑 获取表单内容
+                        var name=$('#recipient-name').val();
+                        var text=$('#message-text').val();
+                        // 获取隐藏域的id
+                        var Id =$('#categoryId').val();
+                        // 发送ajax请求
+                        $.post({
+                            url:BigNew.category_edit,
+                            data:{
+                                name:name,
+                                slug:text,
+                                id:Id
+                            },
+                            success:function(res){
+                                $('#myModal').modal('hide');
+                                getDate();
+                            }
+                        })
+                    }
+                })
+            })
+
+
+
+           
+            // 给删除按钮添加点击事件
+            $('tbody').on('click', '.btn-delete', function () {
+                // console.log('被点击了');
+                // 删除时提醒用户
+                var nes = confirm('亲，确定好要删除了吗？')
+                var deleteId = $(this).attr('data-id')
+
+                if(nes){
+                    $.post({
+                        url:BigNew.category_delete,
+                        data:{
+                            id:deleteId
+                        },
+                        success:function(res){
+                            if(res.code===204){
+                                getDate();   
                             }
                         }
-                    });
+                    })
                 }
-            });
-        
-           
+             
+            })
+
         });
     </script>
 </body>
