@@ -111,7 +111,25 @@
                     url: BigNew.user_edit,
                     data: data,
                     success: function(res) {
+                        if (res.code === 200) {
 
+                            // 发送请求在子页面刷新父页面
+                            $.ajax({
+                                type: 'get',
+                                url: BigNew.user_info,
+                                success: function(res) {
+                                    console.log(res)
+                                        // 修改用户名和用户头像
+                                        // 左边导航栏的头像和用户名
+                                    parent.$('.user_info>img').attr('src', res.data.userPic);
+                                    parent.$('.user_info>span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
+                                    // 顶部栏右边的头像
+                                    parent.$('.user_center_link>img').attr('src', res.data.userPic);
+                                    // 刷新子页面
+                                    window.location.reload();
+                                }
+                            })
+                        }
                     }
                 })
             })
