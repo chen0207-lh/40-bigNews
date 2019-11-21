@@ -74,6 +74,7 @@
             $.get({
                 url: BigNew.user_detail,
                 success: function(res) {
+                    console.log(res)
                     // 当获取成功后，渲染到页面
                     if (res.code === 200) {
                         // 方法1
@@ -87,7 +88,7 @@
                         for (var key in res.data) {
                             $('input.' + key).val(res.data[key])
                         }
-                        $('user_pic').attr('src', res.data.userPic)
+                        $('.user_pic').attr('src', res.data.userPic)
                     }
                 }
             })
@@ -101,24 +102,29 @@
                     $('.user_pic').attr('src', url)
                 })
                 //    给修改按钮添加点击事件
-            $('.btn-edit').on('click', function(e) {
+            $('button.btn-edit').on('click', function(e) {
                 // 阻止默认自动跳转行为
                 e.preventDefault();
-                var form = ('#form')[0];
+                // 获取表单信息
+                var form = $('#form')[0];
                 var data = new FormData(form);
 
                 $.post({
                     url: BigNew.user_edit,
                     data: data,
+                    // 不需要设置请求头
+                    contentType:false,
+                    // 不需要进行编码
+                    processData:false,
                     success: function(res) {
                         if (res.code === 200) {
-
                             // 发送请求在子页面刷新父页面
+                            // debugger;
                             $.ajax({
                                 type: 'get',
-                                url: BigNew.user_info,
+                                url: window.BigNew.user_info,
                                 success: function(res) {
-                                    console.log(res)
+                                    // console.log(res)
                                         // 修改用户名和用户头像
                                         // 左边导航栏的头像和用户名
                                     parent.$('.user_info>img').attr('src', res.data.userPic);

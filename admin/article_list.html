@@ -72,6 +72,17 @@
             </div>
         </div>
     </div>
+    <script src="./libs/http.js"></script>
+    <script>
+    $(function(){
+        $.get({
+            url:BigNew.category_list,
+            success:function(res){
+                // console.log(res)
+            }
+        })
+    })
+    </script>
 </body>
 
 </html>

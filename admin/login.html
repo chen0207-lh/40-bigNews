@@ -43,7 +43,8 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
                 </div>
                 <div class="modal-body">
@@ -57,9 +58,9 @@
     </div>
 
     <script>
-        $(function() {
+        $(function () {
             // 给登录按钮添加点击事件
-            $('.input_sub').on('click', function(e) {
+            $('.input_sub').on('click', function (e) {
                 //  阻止form表单的submit的默认跳转事件
                 e.preventDefault();
                 // 获取用户名和密码框的内容和去除前后空格
@@ -80,7 +81,7 @@
                         username: userName,
                         password: userPaw
                     },
-                    success: function(res) {
+                    success: function (res) {
                         $('.modal-body').text(res.msg);
                         $('#myModal').modal();
                         // 判断用户的用户名和密码是否正确
