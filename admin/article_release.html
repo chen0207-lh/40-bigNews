@@ -14,6 +14,13 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 时间插件文件 -->
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
+
+    <!-- 引入富文本框插件文件 -->
+    <script src="./libs/wangEditor.js"></script>
 </head>
 
 <body>
@@ -39,23 +46,28 @@
                 <div class="form-group">
                     <label for="inputCategory" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control category" name="categoryId">
-                            <option>类别一</option>
+                        <select class="form-control template" name="categoryId">
+                            <!-- <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
                             <option selected>类别四</option>
-                            <option>类别五</option>
+                            <option>类别五</option> -->
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
-                    <div class="col-sm-4">
+                    <!-- 时间插件应用HTML代码 -->
+                    <div class="jeinpbox col-sm-4">
+                        <input type="text" name='date' class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                        <div class="icons jebtns"
+                            onclick="jeDate('#testico',{zIndex:99999,trigger:false,format: 'YYYY-MM-DD'})"></div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
-                    <div class="col-sm-10">
+                    <div id="editor" class="col-sm-8 ">
+                        <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
                     </div>
                 </div>
                 <div class="form-group">
@@ -68,7 +80,91 @@
         </div>
     </div>
     <script src="./libs/http.js"></script>
+    <!-- 文章类别分类类别模板 -->
+    <script type="text/html" id="list">
+    {{each data}}
+    <option value='{{$value.id}}'>{{$value.name}}</option>
+    {{/each}}
+    </script>
     <script>
+        $(function () {
+            // 显示图片
+            $('#inputCover').on('change', function () {
+                var Img = this.files[0];
+                var url = URL.createObjectURL(Img);
+                $('.article_cover').attr('src', url)
+            });
+
+            // 引用引入的时间插件
+            jeDate('#testico', {
+                zIndex: 99999,
+                festival: false,
+                format: 'YYYY-MM-DD',
+                isTime: true
+            });
+
+            // 引用引入的富文本框
+            var E = window.wangEditor
+            var editor = new E('#editor')
+            editor.create()
+
+            // 获取文章类别分类类别
+            $.get({
+                url:BigNew.category_list,
+                success:function(res){
+                    // console.log(res)
+                    var htmlStr = template('list',res)
+                    // console.log(htmlStr)
+                    $('.form-control').html(htmlStr)
+                }
+            })
+
+            $('.btn-release').on('click',function(e){
+                // 阻止表单自动跳转行为
+                // debugger;
+                e.preventDefault();
+                
+                var form = $('#form')[0];
+                var fd = new FormData(form);
+                fd.append('content',editor.txt.html())
+                fd.append('state','已发布')
+
+                $.post({
+                    url:BigNew.article_publish,
+                    data:fd,
+                    processData:false,
+                    contentType:false,
+                    success:function(res){
+                        // console.log(res)
+                        window.history.back();
+
+                    }
+                })
+            })
+
+                // 给存为草稿添加点击事件
+            $('.btn-draft').on('click',function(e){
+                // 阻止表单自动跳转的默认行为
+                e.preventDefault();
+
+                var form = $('#form')[0];
+                var fd = new FormData(form);
+                fd.append('content',editor.txt.html());
+
+                $.post({
+                    url:BigNew.article_publish,
+                    data:fd,
+                    processData:false,
+                    contentType:false,
+                    success:function(res){
+                        window.history.back();
+                    }
+                })
+                
+            })
+
+
+        })
     </script>
 </body>
 
