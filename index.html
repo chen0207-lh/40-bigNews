@@ -246,8 +246,8 @@
     <script type="text/html" id="new-list">
     {{each data}}
     <div class="common_news_list">
-            <a href="./article.html?id='{{$value.id}}'" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
-            <h4><a href="./article.html?id='{{$value.id}}'">{{$value.title}}</a></h4>
+            <a href="./article.html?id={{$value.id}}" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
+            <h4><a href="./article.html?id={{$value.id}}">{{$value.title}}</a></h4>
             <p>{{$value.intro}}</p>
             <div class="new_info" >
                 <span>标签：{{$value.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读(  {{$value.read}}
@@ -262,13 +262,13 @@
     <script type="text/html" id="hot_list">
         {{each data val index}}
         {{if index ==[0]}}
-        <li><span class="first">1</span><a href="./article.html?id='{{val.id}}'">{{val.title}}</a></li>
+        <li><span class="first">1</span><a href="./article.html?id={{val.id}}">{{val.title}}</a></li>
         {{else if index == [1]}}
-        <li><span class="second">2</span><a href="./article.html?id='{{val.id}}'">{{val.title}}</a></li>
+        <li><span class="second">2</span><a href="./article.html?id={{val.id}}">{{val.title}}</a></li>
         {{else if index == [2]}}
-        <li><span class="third">3</span><a href="./article.html?id='{{val.id}}'">{{val.title}}</a></li>
+        <li><span class="third">3</span><a href="./article.html?id={{val.id}}">{{val.title}}</a></li>
         {{else}}
-        <li><span>{{index+1}}</span><a href="#">{{val.title}}</a></li>
+        <li><span>{{index+1}}</span><a href="./article.html?id={{val.id}}">{{val.title}}</a></li>
         {{/if}}
     {{/each}}
     </script>
